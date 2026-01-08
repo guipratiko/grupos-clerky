@@ -161,7 +161,7 @@ export const deleteAutoMessageConfig = async (
       WHERE id = $1 AND user_id = $2
     `;
     const result = await client.query(query, [id, user_id]);
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   } finally {
     client.release();
   }
@@ -215,15 +215,14 @@ export const sendWelcomeMessage = async (
     );
 
     // Aplicar delay se configurado
-    if (configs.welcome.welcome_delay_seconds > 0) {
+    if (configs.welcome && configs.welcome.welcome_delay_seconds > 0) {
       await new Promise(resolve => setTimeout(resolve, configs.welcome.welcome_delay_seconds * 1000));
     }
 
     // Enviar mensagem via Evolution API
     await requestEvolutionAPI(
-      instanceName,
       'POST',
-      `/message/sendText/${instanceName}`,
+      `/message/sendText/${encodeURIComponent(instanceName)}`,
       {
         number: contactJid,
         text: message,
@@ -283,15 +282,14 @@ export const sendGoodbyeMessage = async (
     );
 
     // Aplicar delay se configurado
-    if (configs.goodbye.goodbye_delay_seconds > 0) {
+    if (configs.goodbye && configs.goodbye.goodbye_delay_seconds > 0) {
       await new Promise(resolve => setTimeout(resolve, configs.goodbye.goodbye_delay_seconds * 1000));
     }
 
     // Enviar mensagem via Evolution API
     await requestEvolutionAPI(
-      instanceName,
       'POST',
-      `/message/sendText/${instanceName}`,
+      `/message/sendText/${encodeURIComponent(instanceName)}`,
       {
         number: contactJid,
         text: message,

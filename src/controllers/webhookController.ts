@@ -51,9 +51,8 @@ export const processGroupParticipantsUpdate = async (
 
     try {
       const groupInfo = await requestEvolutionAPI(
-        instanceName,
         'GET',
-        `/group/fetchGroupInfo/${instanceName}?groupJid=${encodeURIComponent(groupId)}`
+        `/group/fetchGroupInfo/${encodeURIComponent(instanceName)}?groupJid=${encodeURIComponent(groupId)}`
       );
       groupName = groupInfo?.data?.subject;
       groupDescription = groupInfo?.data?.description;
