@@ -8,7 +8,7 @@ import { sendWelcomeMessage, sendGoodbyeMessage } from '../services/autoMessageS
 import { getInstance } from '../utils/instanceHelper';
 import { extractPhoneFromJid, normalizePhone } from '../utils/numberNormalizer';
 import { requestEvolutionAPI } from '../utils/evolutionAPI';
-import { createError } from '../utils/errorHelpers';
+import { createAppError } from '../utils/errorHelpers';
 
 /**
  * Processar webhook de movimentação de participantes

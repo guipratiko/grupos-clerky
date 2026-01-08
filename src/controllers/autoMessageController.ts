@@ -2,27 +2,28 @@
  * Controller para gerenciar mensagens automáticas de grupos
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import {
   upsertAutoMessageConfig,
   listAutoMessageConfigs,
   deleteAutoMessageConfig,
   getAutoMessageConfig,
 } from '../services/autoMessageService';
-import { createError } from '../utils/errorHelpers';
+import { createAppError, createValidationError, createNotFoundError } from '../utils/errorHelpers';
 
 /**
  * Criar ou atualizar configuração de mensagens automáticas
  */
 export const upsertAutoMessageController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      throw createError('Usuário não autenticado', 401);
+      throw createAppError('Usuário não autenticado', 401);
     }
 
     const {
@@ -59,14 +60,14 @@ export const upsertAutoMessageController = async (
  * Listar todas as configurações de mensagens automáticas do usuário
  */
 export const listAutoMessagesController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      throw createError('Usuário não autenticado', 401);
+      throw createAppError('Usuário não autenticado', 401);
     }
 
     const configs = await listAutoMessageConfigs(userId);
@@ -84,20 +85,20 @@ export const listAutoMessagesController = async (
  * Buscar configuração de um grupo específico (global + override)
  */
 export const getAutoMessageController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      throw createError('Usuário não autenticado', 401);
+      throw createAppError('Usuário não autenticado', 401);
     }
 
     const { group_id } = req.params;
 
     if (!group_id) {
-      throw createError('ID do grupo é obrigatório', 400);
+      throw createValidationError('ID do grupo é obrigatório');
     }
 
     const configs = await getAutoMessageConfig(userId, group_id);
@@ -115,26 +116,26 @@ export const getAutoMessageController = async (
  * Deletar configuração de mensagens automáticas
  */
 export const deleteAutoMessageController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const userId = req.user?.id;
     if (!userId) {
-      throw createError('Usuário não autenticado', 401);
+      throw createAppError('Usuário não autenticado', 401);
     }
 
     const { id } = req.params;
 
     if (!id) {
-      throw createError('ID da configuração é obrigatório', 400);
+      throw createValidationError('ID da configuração é obrigatório');
     }
 
     const deleted = await deleteAutoMessageConfig(id, userId);
 
     if (!deleted) {
-      throw createError('Configuração não encontrada', 404);
+      throw createNotFoundError('Configuração');
     }
 
     res.status(200).json({

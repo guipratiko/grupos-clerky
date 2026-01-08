@@ -215,8 +215,9 @@ export const sendWelcomeMessage = async (
     );
 
     // Aplicar delay se configurado
-    if (configs.welcome && configs.welcome.welcome_delay_seconds > 0) {
-      await new Promise(resolve => setTimeout(resolve, configs.welcome.welcome_delay_seconds * 1000));
+    const welcomeConfig = configs.welcome;
+    if (welcomeConfig && welcomeConfig.welcome_delay_seconds > 0) {
+      await new Promise(resolve => setTimeout(resolve, welcomeConfig.welcome_delay_seconds * 1000));
     }
 
     // Enviar mensagem via Evolution API
@@ -282,8 +283,9 @@ export const sendGoodbyeMessage = async (
     );
 
     // Aplicar delay se configurado
-    if (configs.goodbye && configs.goodbye.goodbye_delay_seconds > 0) {
-      await new Promise(resolve => setTimeout(resolve, configs.goodbye.goodbye_delay_seconds * 1000));
+    const goodbyeConfig = configs.goodbye;
+    if (goodbyeConfig && goodbyeConfig.goodbye_delay_seconds > 0) {
+      await new Promise(resolve => setTimeout(resolve, goodbyeConfig.goodbye_delay_seconds * 1000));
     }
 
     // Enviar mensagem via Evolution API

@@ -1,5 +1,8 @@
 import { AppError } from '../middleware/errorHandler';
 
+// Re-exportar AppError para uso em outros módulos
+export type { AppError };
+
 /**
  * Cria um AppError de forma consistente
  */

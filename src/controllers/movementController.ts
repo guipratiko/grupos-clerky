@@ -2,15 +2,16 @@
  * Controller para gerenciar movimentações de participantes em grupos
  */
 
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
+import { AuthRequest } from '../middleware/auth';
 import { listMovements, getGroupMovements } from '../services/groupMovementService';
-import { AppError, createAppError, createValidationError } from '../utils/errorHelpers';
+import { createAppError, createValidationError } from '../utils/errorHelpers';
 
 /**
  * Listar movimentações com filtros
  */
 export const listMovementsController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
@@ -56,7 +57,7 @@ export const listMovementsController = async (
  * Buscar movimentações de um grupo específico
  */
 export const getGroupMovementsController = async (
-  req: Request,
+  req: AuthRequest,
   res: Response,
   next: NextFunction
 ): Promise<void> => {

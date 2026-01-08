@@ -36,7 +36,7 @@ export interface InstanceInfo {
 }
 
 /**
- * Buscar instância do MongoDB
+ * Buscar instância do MongoDB por ID
  */
 export const getInstanceInfo = async (
   instanceId: string,
@@ -72,6 +72,36 @@ export const getInstanceInfo = async (
   } catch (error: any) {
     const errorMessage = error?.message || 'Erro desconhecido';
     console.warn(`⚠️ Erro ao buscar instância ${instanceId} do MongoDB: ${errorMessage}`);
+    return null;
+  }
+};
+
+/**
+ * Buscar instância do MongoDB por instanceName
+ */
+export const getInstance = async (
+  instanceName: string
+): Promise<InstanceInfo | null> => {
+  try {
+    // Buscar instância no MongoDB pelo instanceName
+    const instance = await Instance.findOne({
+      instanceName: instanceName,
+    }).lean() as IInstanceDocument | null;
+
+    if (!instance) {
+      return null;
+    }
+
+    return {
+      _id: String(instance._id),
+      instanceName: instance.instanceName,
+      status: instance.status,
+      name: instance.name,
+      userId: String(instance.userId),
+    };
+  } catch (error: any) {
+    const errorMessage = error?.message || 'Erro desconhecido';
+    console.warn(`⚠️ Erro ao buscar instância ${instanceName} do MongoDB: ${errorMessage}`);
     return null;
   }
 };
