@@ -6,7 +6,7 @@
 import mongoose from 'mongoose';
 
 // Schema simplificado para buscar apenas os campos necessários
-interface IInstance {
+interface IInstanceDocument {
   _id: mongoose.Types.ObjectId;
   instanceName: string;
   userId: mongoose.Types.ObjectId;
@@ -14,7 +14,7 @@ interface IInstance {
   name: string;
 }
 
-const InstanceSchema = new mongoose.Schema<IInstance>(
+const InstanceSchema = new mongoose.Schema(
   {
     instanceName: { type: String, required: true },
     userId: { type: mongoose.Schema.Types.ObjectId, required: true },
@@ -25,7 +25,7 @@ const InstanceSchema = new mongoose.Schema<IInstance>(
 );
 
 // Criar modelo apenas se não existir
-const Instance = mongoose.models.Instance || mongoose.model<IInstance>('Instance', InstanceSchema);
+const Instance = mongoose.models.Instance || mongoose.model('Instance', InstanceSchema);
 
 export interface InstanceInfo {
   _id: string;
@@ -56,18 +56,18 @@ export const getInstanceInfo = async (
     const instance = await Instance.findOne({
       _id: instanceObjectId,
       userId: new mongoose.Types.ObjectId(userId),
-    }).lean();
+    }).lean() as IInstanceDocument | null;
 
     if (!instance) {
       return null;
     }
 
     return {
-      _id: instance._id.toString(),
+      _id: String(instance._id),
       instanceName: instance.instanceName,
       status: instance.status,
       name: instance.name,
-      userId: instance.userId.toString(),
+      userId: String(instance.userId),
     };
   } catch (error: any) {
     const errorMessage = error?.message || 'Erro desconhecido';
