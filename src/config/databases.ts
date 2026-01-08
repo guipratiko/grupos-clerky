@@ -1,14 +1,12 @@
 /**
  * Configuração e gerenciamento de todas as conexões de banco de dados
  * - MongoDB: Instâncias (para buscar instanceName)
- * - PostgreSQL: Movimentações de grupos e mensagens automáticas
  * - Redis: Cache de grupos
  */
 
 import mongoose from 'mongoose';
-import { Pool, PoolClient } from 'pg';
 import Redis from 'ioredis';
-import { MONGODB_CONFIG, POSTGRES_CONFIG, REDIS_CONFIG } from './constants';
+import { MONGODB_CONFIG, REDIS_CONFIG } from './constants';
 
 // ============================================
 // MongoDB (Instâncias)
@@ -31,39 +29,6 @@ mongoose.connection.on('disconnected', () => {
 mongoose.connection.on('error', (error: any) => {
   console.error('❌ Erro na conexão MongoDB:', error);
 });
-
-// ============================================
-// PostgreSQL (Movimentações e Mensagens Automáticas)
-// ============================================
-export const pgPool = new Pool({
-  connectionString: POSTGRES_CONFIG.URI,
-  max: 20, // Máximo de conexões no pool
-  idleTimeoutMillis: 30000, // Fechar conexões idle após 30s
-  connectionTimeoutMillis: 2000, // Timeout de conexão de 2s
-});
-
-// Event listeners para PostgreSQL
-pgPool.on('error', (err: Error) => {
-  console.error('❌ Erro inesperado no pool PostgreSQL:', err);
-});
-
-// Função para testar conexão PostgreSQL
-export const testPostgreSQL = async (): Promise<boolean> => {
-  try {
-    const client = await pgPool.connect();
-    await client.query('SELECT NOW()');
-    client.release();
-    return true;
-  } catch (error) {
-    console.error('❌ Erro ao testar conexão PostgreSQL:', error);
-    return false;
-  }
-};
-
-// Função para obter cliente PostgreSQL (para transações)
-export const getPostgreSQLClient = async (): Promise<PoolClient> => {
-  return await pgPool.connect();
-};
 
 // ============================================
 // Redis (Cache de grupos)
@@ -115,14 +80,6 @@ export const connectAllDatabases = async (): Promise<void> => {
     // Conectar MongoDB
     await connectMongoDB();
 
-    // Testar PostgreSQL
-    const pgConnected = await testPostgreSQL();
-    if (pgConnected) {
-      console.log('✅ PostgreSQL conectado e testado');
-    } else {
-      console.warn('⚠️  PostgreSQL não conectado, mas continuando...');
-    }
-
     // Testar Redis
     const redisConnected = await testRedis();
     if (redisConnected) {
@@ -144,10 +101,6 @@ export const closeAllDatabases = async (): Promise<void> => {
     // Fechar MongoDB
     await mongoose.connection.close();
     console.log('✅ MongoDB desconectado');
-
-    // Fechar PostgreSQL
-    await pgPool.end();
-    console.log('✅ PostgreSQL desconectado');
 
     // Fechar Redis
     redisClient.disconnect();

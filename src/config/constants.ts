@@ -30,11 +30,6 @@ export const REDIS_CONFIG = {
   URI: process.env.REDIS_URI || 'redis://default:Gd4562Vbfs341le@easy.clerky.com.br:6378',
 };
 
-// PostgreSQL Configuration (mesmo banco do backend principal)
-export const POSTGRES_CONFIG = {
-  URI: process.env.POSTGRES_URI || 'postgres://clerkypost:rf3dF5Bj76Tt4Olp@easy.clerky.com.br:5433/clerkysys?sslmode=disable',
-};
-
 // Socket.io Configuration (backend principal)
 export const SOCKET_CONFIG = {
   URL: process.env.SOCKET_URL || process.env.BACKEND_URL || 'http://localhost:4331',
